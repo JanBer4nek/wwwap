@@ -9,4 +9,15 @@ body {
 
 canvas {
     border: 1px solid #000;
+    display: none;
+}
+
+#gameMenu {
+    text-align: center;
+}
+
+#startButton {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
 }
