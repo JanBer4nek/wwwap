@@ -1,3 +1,5 @@
+let requestId;
+
 function drawBall() {
     ctx.beginPath();
     ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
@@ -43,16 +45,12 @@ function collisionDetection() {
     for (let c = 0; c < brickColumnCount; c++) {
         for (let r = 0; r < brickRowCount; r++) {
             const b = bricks[c][r];
-            if (b.status === 1) {
-                if (
-                    ballX > b.x &&
-                    ballX < b.x + brickWidth &&
-                    ballY > b.y &&
-                    ballY < b.y + brickHeight
-                ) {
-                    ballSpeedY = -ballSpeedY;
-                    b.status = 0;
-                }
+            if (b.status === 1 && ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight) {
+                ballSpeedY = -ballSpeedY;
+                b.status = 0;
+                score += 100;
+                updateScoreDisplay();
+
             }
         }
     }

@@ -21,3 +21,30 @@ canvas {
     font-size: 16px;
     cursor: pointer;
 }
+
+#scoreDisplay {
+    font-size: 20px;
+    position: absolute;
+    padding: 0px;
+    background-color: #f0f0f0;
+    display: none;
+    margin-bottom: 460px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#gameOverText {
+    font-size: 35px;
+    color: #000000;
+    position: absolute;
+    margin-top: -320px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    white-space: nowrap;
+}
+
+#clearHighScoresButton {
+    margin-top: 28px;
+    margin-left: 30px;
+}

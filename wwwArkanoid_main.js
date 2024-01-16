@@ -2,22 +2,20 @@ const canvas = document.getElementById('arkanoidCanvas');
 const gameMenu = document.getElementById('gameMenu');
 const startButton = document.getElementById('startButton');
 const ctx = canvas.getContext('2d');
+let currentUsername;
 
-let ballX = canvas.width / 2;
-let ballY = canvas.height - 30;
-let ballSpeedX = 2;
-let ballSpeedY = -2;
+let ballX, ballY, ballSpeedX, ballSpeedY;
 
 const paddleHeight = 10;
-const paddleWidth = 75;
-let paddleX = (canvas.width - paddleWidth) / 2;
+const paddleWidth = 130;
+let paddleX;
 
 let rightPressed = false;
 let leftPressed = false;
 let gameOver = true;
 
 const brickRowCount = 5;
-const brickColumnCount = 5;
+const brickColumnCount = 8;
 const brickWidth = 75;
 const brickHeight = 20;
 const brickPadding = 10;
@@ -36,24 +34,46 @@ for (let c = 0; c < brickColumnCount; c++) {
 document.addEventListener('keydown', keyDownHandler);
 document.addEventListener('keyup', keyUpHandler);
 
-startButton.addEventListener('click', startGame);
 
 function startGame() {
-    gameMenu.style.display = 'none';
-    canvas.style.display = 'block';
+    initializeGame();
+
+}
+
+function startAnimation() {
+    requestId = requestAnimationFrame(draw);
+
+}
+
+function initializeGame() {
     ballX = canvas.width / 2;
     ballY = canvas.height - 30;
+    score = 0;
     ballSpeedX = 2;
     ballSpeedY = -2;
+    resetBricks();
     paddleX = (canvas.width - paddleWidth) / 2;
     rightPressed = false;
     leftPressed = false;
     gameOver = false;
+    startAnimation();
+    displayHighScores();
     draw();
-    resetBricks();
+    gameMenu.style.display = 'none';
+    canvas.style.display = 'block';
+    scoreDecrementInterval = setInterval(decrementScore, 2000);
+    document.getElementById('gameOverText').style.display = 'none';
+    document.getElementById('scoreDisplay').style.display = 'block';
+    document.getElementById('highScoresList').style.display = 'none';
+    document.getElementById('clearHighScoresButton').style.display = 'none';
+
 }
 
 function endGame() {
+    const playerScore = { name: currentUsername, score: score };
+    if (currentUsername === undefined) {
+        currentUsername = prompt('Enter your name:');
+    }
     ballSpeedX = 0;
     ballSpeedY = 0;
     gameMenu.style.display = 'block';
@@ -63,4 +83,12 @@ function endGame() {
     gameOver = true;
     rightPressed = false;
     leftPressed = false;
+    cancelAnimationFrame(requestId);
+    clearInterval(scoreDecrementInterval);
+    saveHighScore(playerScore.score, playerScore.name);
+    displayHighScores();
+    document.getElementById('highScoresList').style.display = 'block';
+    document.getElementById('gameOverText').style.display = 'block';
+    document.getElementById('clearHighScoresButton').style.display = 'block';
+
 }

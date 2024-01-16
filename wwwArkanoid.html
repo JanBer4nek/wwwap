@@ -13,14 +13,20 @@
 <body>
     <div id="gameMenu">
         <h2>Arkanoid</h2>
-        <button id="startButton">Start Game</button>
+        <button id="startButton" onclick="startGame()">Start Game</button>
+
     </div>
 
-    <canvas id="arkanoidCanvas" width="480" height="320"></canvas>
+    <canvas id="arkanoidCanvas" width="720" height="480" style="display: none;"></canvas>
+    <div id="scoreDisplay">Score: 0</div>
+    <ul id="highScoresList"></ul>
+    <div id="gameOverText">Game Over</div>
+    <button id="clearHighScoresButton" onclick="clearHighScores()">Clear High Scores</button>
 
     <script src="wwwArkanoid_eventHandlers.js"></script>
     <script src="wwwArkanoid_drawFunctions.js"></script>
     <script src="wwwArkanoid_main.js"></script>
+    <script src= "wwwArkanoid_score.js"></script>
 
 </body>
 
