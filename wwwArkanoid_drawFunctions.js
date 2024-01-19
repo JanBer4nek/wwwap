@@ -82,7 +82,12 @@ function draw() {
     } else if (ballY > canvas.height - 10) {
 
         if (ballX > paddleX && ballX < paddleX + paddleWidth) {
-            ballSpeedY = -ballSpeedY;
+            const relativeIntersectX = ballX - (paddleX + paddleWidth / 2);
+            const normalizedRelativeIntersectX = relativeIntersectX / (paddleWidth / 2);
+            const bounceAngle = normalizedRelativeIntersectX * Math.PI / 3;
+
+            ballSpeedX = 1.5 * Math.sin(bounceAngle);
+            ballSpeedY = -1.5 * Math.cos(bounceAngle);
         } else {
             endGame();
         }
