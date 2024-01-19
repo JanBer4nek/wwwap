@@ -14,7 +14,8 @@
     <div id="gameMenu">
         <h2>Arkanoid</h2>
         <button id="startButton" onclick="startGame()">Start Game</button>
-
+        <button id="logOutButton" onclick="logOut()" style="display: none;">Log Out</button>
+        <div id="loggedInRole"></div>
     </div>
 
     <canvas id="arkanoidCanvas" width="720" height="480" style="display: none;"></canvas>
@@ -23,10 +24,28 @@
     <div id="gameOverText">Game Over</div>
     <button id="clearHighScoresButton" onclick="clearHighScores()">Clear High Scores</button>
 
+    <div id="loginPopup">
+        <h1>Arkanoid</h1>
+        <h3>Please login</h3>
+        <label for="role">Login as:</label>
+        <select id="role" onchange="toggleFields()">
+            <option value="guest">Guest</option>
+            <option value="member">Member</option>
+            <option value="admin">Admin</option>
+        </select><br>
+        <label for="username" id="usernameLabel">Username:</label>
+        <input type="text" id="username"><br>
+        <label for="password" id="passwordLabel">Password:</label>
+        <input type="password" id="password"><br>
+        <button onclick="login()">Login</button>
+        <button id="registerButton" onclick="register()">Register</button>
+    </div>
+
     <script src="wwwArkanoid_eventHandlers.js"></script>
     <script src="wwwArkanoid_drawFunctions.js"></script>
     <script src="wwwArkanoid_main.js"></script>
-    <script src= "wwwArkanoid_score.js"></script>
+    <script src="wwwArkanoid_score.js"></script>
+    <script src="wwwArkanoid_login.js"></script>
 
 </body>
 

@@ -8,8 +8,10 @@ body {
 }
 
 canvas {
-    border: 1px solid #000;
+    border: 2px solid #000000;
     display: none;
+    position: relative;
+    top: 30px;
 }
 
 #gameMenu {
@@ -47,4 +49,52 @@ canvas {
 #clearHighScoresButton {
     margin-top: 28px;
     margin-left: 30px;
+}
+
+.login-container {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+label {
+    display: block;
+    margin: 10px 0;
+}
+
+button {
+    padding: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+#loginPopup {
+    text-align: center;
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 20px;
+    padding-left: 120px;
+    padding-right: 120px;
+    border: 1px solid #ffffff;
+    box-shadow: 0 0 10px #000000;
+}
+
+#registerButton {
+    position: absolute;
+    left: 60%;
+    top: 83.5%;
+
+}
+
+#logOutButton {
+    margin-left: 30px;
+}
+
+#loggedInRole {
+    margin-top: 20px;
 }

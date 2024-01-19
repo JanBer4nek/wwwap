@@ -65,9 +65,9 @@ function draw() {
     collisionDetection();
 
     if (rightPressed && paddleX < canvas.width - paddleWidth) {
-        paddleX += 7;
+        paddleX += 2;
     } else if (leftPressed && paddleX > 0) {
-        paddleX -= 7;
+        paddleX -= 2;
     }
 
     ballX += ballSpeedX;

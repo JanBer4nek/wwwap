@@ -33,11 +33,18 @@ for (let c = 0; c < brickColumnCount; c++) {
 
 document.addEventListener('keydown', keyDownHandler);
 document.addEventListener('keyup', keyUpHandler);
-
+document.getElementById('clearHighScoresButton').style.display = 'none';
 
 function startGame() {
-    initializeGame();
+    const role = document.getElementById('role').value;
 
+    if (role === 'member') {
+        currentUsername = document.getElementById('username').value.trim();
+        initializeGame();
+    } else {
+        initializeGame();
+
+    }
 }
 
 function startAnimation() {
@@ -49,8 +56,8 @@ function initializeGame() {
     ballX = canvas.width / 2;
     ballY = canvas.height - 30;
     score = 0;
-    ballSpeedX = 2;
-    ballSpeedY = -2;
+    ballSpeedX = 1.1;
+    ballSpeedY = -1.1;
     resetBricks();
     paddleX = (canvas.width - paddleWidth) / 2;
     rightPressed = false;
@@ -66,20 +73,34 @@ function initializeGame() {
     document.getElementById('scoreDisplay').style.display = 'block';
     document.getElementById('highScoresList').style.display = 'none';
     document.getElementById('clearHighScoresButton').style.display = 'none';
+    document.getElementById('logOutButton').style.display = 'none';
+
+    if (role === 'guest') {
+        currentUsername = 'guest';
+    }
 
 }
 
 function endGame() {
     const playerScore = { name: currentUsername, score: score };
+    const role = document.getElementById('role').value;
+
     if (currentUsername === undefined) {
         currentUsername = prompt('Enter your name:');
     }
+
+    if (currentUsername === null || currentUsername === '') {
+        currentUsername = 'admin';
+    }
+
+    if (role === 'admin') {
+        document.getElementById('clearHighScoresButton').style.display = 'block';
+    }
+
     ballSpeedX = 0;
     ballSpeedY = 0;
     gameMenu.style.display = 'block';
     canvas.style.display = 'none';
-    document.addEventListener('keydown', keyDownHandler);
-    document.addEventListener('keyup', keyUpHandler);
     gameOver = true;
     rightPressed = false;
     leftPressed = false;
@@ -89,6 +110,6 @@ function endGame() {
     displayHighScores();
     document.getElementById('highScoresList').style.display = 'block';
     document.getElementById('gameOverText').style.display = 'block';
-    document.getElementById('clearHighScoresButton').style.display = 'block';
+    document.getElementById('logOutButton').style.display = 'block';
 
 }

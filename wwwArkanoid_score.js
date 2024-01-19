@@ -38,6 +38,7 @@ function displayHighScores() {
             listItem.textContent = `${index + 1}. ${entry.playerName}: ${entry.score}`;
             highScoresList.appendChild(listItem);
         });
+        
     } else {
         highScoresList.innerHTML = '<h3>High Scores:</h3><h0>(No high scores yet)</h0>';
 
@@ -50,3 +51,4 @@ function clearHighScores() {
     highScoresList.innerHTML = '<h3>High Scores:</h3><h0>(No high scores yet)</h0>';
 
 }
+
