@@ -51,4 +51,3 @@ function clearHighScores() {
     highScoresList.innerHTML = '<h3>High Scores:</h3><h0>(No high scores yet)</h0>';
 
 }
-

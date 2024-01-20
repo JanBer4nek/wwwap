@@ -93,6 +93,10 @@ function draw() {
         }
     }
 
+    if (bricks.every(row => row.every(brick => brick.status === 0))) {
+        endGame();
+    }
+    
     if (!gameOver) {
         requestId = requestAnimationFrame(draw);
     }

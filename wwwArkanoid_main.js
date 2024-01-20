@@ -74,16 +74,15 @@ function initializeGame() {
     document.getElementById('highScoresList').style.display = 'none';
     document.getElementById('clearHighScoresButton').style.display = 'none';
     document.getElementById('logOutButton').style.display = 'none';
+    
+}
+
+function endGame() {
+    const role = document.getElementById('role').value;
 
     if (role === 'guest') {
         currentUsername = 'guest';
     }
-
-}
-
-function endGame() {
-    const playerScore = { name: currentUsername, score: score };
-    const role = document.getElementById('role').value;
 
     if (currentUsername === undefined) {
         currentUsername = prompt('Enter your name:');
@@ -96,6 +95,8 @@ function endGame() {
     if (role === 'admin') {
         document.getElementById('clearHighScoresButton').style.display = 'block';
     }
+
+    const playerScore = { name: currentUsername, score: score };
 
     ballSpeedX = 0;
     ballSpeedY = 0;
