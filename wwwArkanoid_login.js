@@ -14,9 +14,9 @@ function toggleFields() {
         registerButton.style.display = 'none';
 
     } else if (role === 'admin') {
-        usernameLabel.style.display = 'none';
+        usernameLabel.style.display = 'block';
         passwordLabel.style.display = 'block';
-        usernameInput.style.display = 'none';
+        usernameInput.style.display = 'block';
         passwordInput.style.display = 'block';
         registerButton.style.display = 'none';
 
@@ -30,9 +30,6 @@ function toggleFields() {
     }
 }
 
-const storedUsername = localStorage.getItem('username');
-const storedPassword = localStorage.getItem('password');
-
 function login() {
     const role = document.getElementById('role').value;
     const username = document.getElementById('username').value;
@@ -43,29 +40,33 @@ function login() {
         alert('Name and password cannot be empty.');
     } else {
         if (role === 'guest') {
-            // alert(`Welcome! You are logged in as ${role}`);
             loggedIn();
-            loggedInRoleElement.textContent = `Logged in as ${role}`;
+            loggedInRoleElement.textContent = `Logged in as: Guest`;
 
 
-        } else if (role === 'admin' && password === 'admin') {
-            // alert(`Welcome! You are logged in as ${role}`);
-            loggedIn();
-            loggedInRoleElement.textContent = `Logged in as ${role}`;
+        } else if (role === 'admin') {
+            const storedAdmins = JSON.parse(localStorage.getItem('admins')) || [];
+            const admin = storedAdmins.find(u => u.name === username && u.password === password);
+            
+            if (admin) {
+                loggedIn();
+
+            loggedInRoleElement.textContent = `Logged in as Admin: ${username}`;
             document.getElementById('clearHighScoresButton').style.display = 'block';
-        } else if (role === 'admin' && password !== 'admin') {
-            alert('Invalid password.');
 
+            } else {
+            alert('Invalid username or password.');
+
+            }
 
         } else {
             const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
             const user = storedUsers.find(u => u.name === username && u.password === password);
+            
             if (user) {
-                // alert(`Welcome, ${username}! You are logged in as ${role}`);
                 loggedIn();
-                loggedInRoleElement.textContent = `Logged in as ${username}`;
+                loggedInRoleElement.textContent = `Logged in as: ${username}`;
 
-                
             } else {
                 alert('Invalid username or password.');
 
@@ -73,6 +74,16 @@ function login() {
         }
     }
 }
+
+function addAdmin(username, password) {
+    let storedAdmins = JSON.parse(localStorage.getItem('admins')) || [];
+    storedAdmins.push({ name: username, password: password });
+    localStorage.setItem('admins', JSON.stringify(storedAdmins));
+    
+}
+addAdmin('honzaB', 'neuhodnutelné:)');
+addAdmin('petrD', '1234');
+
 
 function register() {
     const role = document.getElementById('role').value;

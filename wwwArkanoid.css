@@ -91,9 +91,10 @@ button {
 }
 
 #logOutButton {
-    margin-left: 30px;
+    margin-left: 18px;
 }
 
 #loggedInRole {
-    margin-top: 20px;
+    position: fixed;
+    margin-top: 50px;
 }
