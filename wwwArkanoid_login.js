@@ -20,6 +20,9 @@ class Login {
     }
 
     toggleFields() {
+        this.addAdmin('honzaB', 'neuhodnutelné:)');
+        this.addAdmin('petrD', '1234');
+
         const role = document.getElementById('role').value;
         const usernameLabel = document.getElementById('usernameLabel');
         const passwordLabel = document.getElementById('passwordLabel');
@@ -89,6 +92,12 @@ class Login {
         localStorage.setItem('admins', JSON.stringify(storedAdmins));
     }
 
+    newAdmin() {
+        const login = new Login();
+        login.addAdmin('honzaB', 'neuhodnutelné:)');
+        login.addAdmin('petrD', '1234');
+    }
+    
     register() {
         const role = document.getElementById('role').value;
         const username = document.getElementById('username').value;
