@@ -1,116 +1,102 @@
-const canvas = document.getElementById('arkanoidCanvas');
-const gameMenu = document.getElementById('gameMenu');
-const startButton = document.getElementById('startButton');
-const ctx = canvas.getContext('2d');
-let currentUsername;
+class Main {
+    constructor() {
+        this.canvas = document.getElementById('arkanoidCanvas');
+        this.gameMenu = document.getElementById('gameMenu');
+        this.startButton = document.getElementById('startButton');
+        this.ctx = this.canvas.getContext('2d');
+        this.currentUsername = null;
 
-let ballX, ballY, ballSpeedX, ballSpeedY;
+        this.ballX = this.canvas.width / 2;
+        this.ballY = this.canvas.height - 30;
+        this.ballSpeedX = 1.1;
+        this.ballSpeedY = -1.1;
 
-const paddleHeight = 10;
-const paddleWidth = 130;
-let paddleX;
+        this.paddleHeight = 10;
+        this.paddleWidth = 130;
+        this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
 
-let rightPressed = false;
-let leftPressed = false;
-let gameOver = true;
+        this.rightPressed = false;
+        this.leftPressed = false;
+        this.gameOver = true;
 
-const brickRowCount = 5;
-const brickColumnCount = 8;
-const brickWidth = 75;
-const brickHeight = 20;
-const brickPadding = 10;
-const brickOffsetTop = 30;
-const brickOffsetLeft = 30;
+        this.brickRowCount = 5;
+        this.brickColumnCount = 8;
+        this.brickWidth = 75;
+        this.brickHeight = 20;
+        this.brickPadding = 10;
+        this.brickOffsetTop = 30;
+        this.brickOffsetLeft = 30;
 
-const bricks = [];
+        this.bricks = [];
 
-for (let c = 0; c < brickColumnCount; c++) {
-    bricks[c] = [];
-    for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { status: 1 };
+        for (let c = 0; c < this.brickColumnCount; c++) {
+            this.bricks[c] = [];
+            for (let r = 0; r < this.brickRowCount; r++) {
+                this.bricks[c][r] = { status: 1 };
+            }
+        }
+
+        this.keyInputHandler = new KeyInputHandler();
+        this.gameRenderer = new GameRenderer(this.ctx, this.canvas, this.keyInputHandler, this.bricks, this);
+
+        document.getElementById('clearHighScoresButton').style.display = 'none';
+
+        this.startButton.addEventListener('click', () => this.startGame());
+    }
+
+    startGame() {
+        const role = document.getElementById('role').value;
+
+        if (role === 'member') {
+            this.currentUsername = document.getElementById('username').value.trim();
+            this.gameRenderer.initializeGame();
+        } else {
+            this.gameRenderer.initializeGame();
+        }
+    }
+
+    startAnimation() {
+        this.requestId = requestAnimationFrame(() => this.gameRenderer.draw());
+    }
+
+    endGame() {
+        const role = document.getElementById('role').value;
+
+        if (role === 'guest') {
+            this.currentUsername = 'guest';
+        }
+
+        if (this.currentUsername === undefined) {
+            this.currentUsername = prompt('Enter your name:');
+        }
+
+        if (this.currentUsername === null || this.currentUsername === '') {
+            this.currentUsername = 'admin';
+        }
+
+        if (role === 'admin') {
+            document.getElementById('clearHighScoresButton').style.display = 'block';
+        }
+
+        const playerScore = { name: this.currentUsername, score: highScoreManager.score };
+
+        this.ballSpeedX = 0;
+        this.ballSpeedY = 0;
+        this.gameMenu.style.display = 'block';
+        this.canvas.style.display = 'none';
+        this.gameOver = true;
+        this.rightPressed = false;
+        this.leftPressed = false;
+        cancelAnimationFrame(this.requestId);
+        clearInterval(highScoreManager.scoreDecrementInterval);
+        highScoreManager.saveHighScore(playerScore.name);
+        highScoreManager.displayHighScores();
+        document.getElementById('highScoresList').style.display = 'block';
+        document.getElementById('gameOverText').style.display = 'block';
+        document.getElementById('logOutButton').style.display = 'block';
+        document.getElementById('scoreDisplay').style.display = 'block';
+
     }
 }
 
-document.addEventListener('keydown', keyDownHandler);
-document.addEventListener('keyup', keyUpHandler);
-document.getElementById('clearHighScoresButton').style.display = 'none';
-
-function startGame() {
-    const role = document.getElementById('role').value;
-
-    if (role === 'member') {
-        currentUsername = document.getElementById('username').value.trim();
-        initializeGame();
-    } else {
-        initializeGame();
-
-    }
-}
-
-function startAnimation() {
-    requestId = requestAnimationFrame(draw);
-
-}
-
-function initializeGame() {
-    ballX = canvas.width / 2;
-    ballY = canvas.height - 30;
-    score = 0;
-    ballSpeedX = 1.1;
-    ballSpeedY = -1.1;
-    resetBricks();
-    paddleX = (canvas.width - paddleWidth) / 2;
-    rightPressed = false;
-    leftPressed = false;
-    gameOver = false;
-    startAnimation();
-    displayHighScores();
-    draw();
-    gameMenu.style.display = 'none';
-    canvas.style.display = 'block';
-    scoreDecrementInterval = setInterval(decrementScore, 2000);
-    document.getElementById('gameOverText').style.display = 'none';
-    document.getElementById('scoreDisplay').style.display = 'block';
-    document.getElementById('highScoresList').style.display = 'none';
-    document.getElementById('clearHighScoresButton').style.display = 'none';
-    document.getElementById('logOutButton').style.display = 'none';
-    
-}
-
-function endGame() {
-    const role = document.getElementById('role').value;
-
-    if (role === 'guest') {
-        currentUsername = 'guest';
-    }
-
-    if (currentUsername === undefined) {
-        currentUsername = prompt('Enter your name:');
-    }
-
-    if (currentUsername === null || currentUsername === '') {
-        currentUsername = 'admin';
-    }
-
-    if (role === 'admin') {
-        document.getElementById('clearHighScoresButton').style.display = 'block';
-    }
-
-    const playerScore = { name: currentUsername, score: score };
-
-    ballSpeedX = 0;
-    ballSpeedY = 0;
-    gameMenu.style.display = 'block';
-    canvas.style.display = 'none';
-    gameOver = true;
-    rightPressed = false;
-    leftPressed = false;
-    cancelAnimationFrame(requestId);
-    clearInterval(scoreDecrementInterval);
-    saveHighScore(playerScore.score, playerScore.name);
-    displayHighScores();
-    document.getElementById('highScoresList').style.display = 'block';
-    document.getElementById('gameOverText').style.display = 'block';
-    document.getElementById('logOutButton').style.display = 'block';
-
-}
+const main = new Main();

@@ -13,8 +13,8 @@
 <body>
     <div id="gameMenu">
         <h2>Arkanoid</h2>
-        <button id="startButton" onclick="startGame()">Start Game</button>
-        <button id="logOutButton" onclick="logOut()" style="display: none;">Log Out</button>
+        <button id="startButton">Start Game</button>
+        <button id="logOutButton" onclick="login.logOut()" style="display: none;">Log Out</button>
         <div id="loggedInRole"></div>
     </div>
 
@@ -22,13 +22,13 @@
     <div id="scoreDisplay">Score: 0</div>
     <ul id="highScoresList"></ul>
     <div id="gameOverText">Game Over</div>
-    <button id="clearHighScoresButton" onclick="clearHighScores()">Clear High Scores</button>
+    <button id="clearHighScoresButton" onclick="highScoreManager.clearHighScores()">Clear High Scores</button>
 
     <div id="loginPopup">
         <h1>Arkanoid</h1>
         <h3>Please login</h3>
         <label for="role">Login as:</label>
-        <select id="role" onchange="toggleFields()">
+        <select id="role" onchange="login.toggleFields()">
             <option value="guest">Guest</option>
             <option value="member">Member</option>
             <option value="admin">Admin</option>
@@ -37,8 +37,8 @@
         <input type="text" id="username"><br>
         <label for="password" id="passwordLabel">Password:</label>
         <input type="password" id="password"><br>
-        <button onclick="login()">Login</button>
-        <button id="registerButton" onclick="register()">Register</button>
+        <button id="loginButton">Login</button>
+        <button id="registerButton" onclick="login.register()">Register</button>
     </div>
 
     <script src="wwwArkanoid_eventHandlers.js"></script>
