@@ -70,11 +70,6 @@ class Login {
         const userManager = role === 'admin' ? new UserManager('admins') : new UserManager('users');
         const user = userManager.getUser(username, password);
 
-        if (!user && role !== 'guest') {
-            alert('Invalid username or password.');
-            return;
-        }
-
         if (role === 'admin') {
             const validAdmins = [
                 { username: 'petrD', password: ADMIN_PASSWORD_PETR_D },
@@ -82,7 +77,13 @@ class Login {
             ];
             const isValidAdmin = validAdmins.some(admin => admin.username === username && admin.password === password);
             if (!isValidAdmin) {
-                alert('You are not authorized to log in as an admin.');
+                alert('Invalid username or password.');
+                return;
+            }
+
+        } else if (role === 'member') {
+            if (!user) {
+                alert('Invalid username or password.');
                 return;
             }
         }

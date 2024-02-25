@@ -66,6 +66,7 @@ class Main {
 
         if (role === 'admin') {
             this.currentUsername = 'admin';
+            document.getElementById('clearHighScoresButton').style.display = 'block';
         }
 
         this.gameOver = true;
