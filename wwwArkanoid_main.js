@@ -26,26 +26,20 @@ class Main {
         this.brickPadding = 10;
         this.brickOffsetTop = 30;
         this.brickOffsetLeft = 30;
-
         this.bricks = [];
-
-        for (let c = 0; c < this.brickColumnCount; c++) {
-            this.bricks[c] = [];
-            for (let r = 0; r < this.brickRowCount; r++) {
-                this.bricks[c][r] = { status: 1 };
-            }
-        }
-
+        
+        this.scoreDecrementer = new ScoreDecrementer(highScoreManager);
         this.keyInputHandler = new KeyInputHandler();
         this.gameRenderer = new GameRenderer(this.ctx, this.canvas, this.keyInputHandler, this.bricks, this);
-
-        document.getElementById('clearHighScoresButton').style.display = 'none';
+        this.ball = new Ball(this.ballX, this.ballY, 10, 'blue', this.ctx); 
+        this.paddle = new Paddle(this.paddleX, this.canvas.height - this.paddleHeight, this.paddleWidth, this.paddleHeight, 'blue', this.ctx);
 
         this.startButton.addEventListener('click', () => this.startGame());
     }
 
     startGame() {
         const role = document.getElementById('role').value;
+        this.scoreDecrementer.start();
 
         if (role === 'member') {
             this.currentUsername = document.getElementById('username').value.trim();
@@ -66,35 +60,24 @@ class Main {
             this.currentUsername = 'guest';
         }
 
-        if (this.currentUsername === undefined) {
-            this.currentUsername = prompt('Enter your name:');
-        }
-
         if (this.currentUsername === null || this.currentUsername === '') {
             this.currentUsername = 'admin';
         }
 
         if (role === 'admin') {
-            document.getElementById('clearHighScoresButton').style.display = 'block';
+            this.currentUsername = 'admin';
         }
 
-        const playerScore = { name: this.currentUsername, score: highScoreManager.score };
-
-        this.ballSpeedX = 0;
-        this.ballSpeedY = 0;
+        this.gameOver = true;
+        cancelAnimationFrame(this.requestId);
         this.gameMenu.style.display = 'block';
         this.canvas.style.display = 'none';
-        this.gameOver = true;
-        this.rightPressed = false;
-        this.leftPressed = false;
-        cancelAnimationFrame(this.requestId);
-        clearInterval(highScoreManager.scoreDecrementInterval);
-        highScoreManager.saveHighScore(playerScore.name);
-        highScoreManager.displayHighScores();
-        document.getElementById('highScoresList').style.display = 'block';
+        highScoreManager.saveHighScore(this.currentUsername);
         document.getElementById('gameOverText').style.display = 'block';
-        document.getElementById('logOutButton').style.display = 'block';
         document.getElementById('scoreDisplay').style.display = 'block';
+        document.getElementById('highScoresList').style.display = 'block';
+        document.getElementById('logOutButton').style.display = 'block';
+        this.scoreDecrementer.stop();
 
     }
 }

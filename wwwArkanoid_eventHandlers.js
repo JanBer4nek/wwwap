@@ -1,28 +1,28 @@
 class KeyInputHandler {
-    constructor() {
+  constructor() {
       this.rightPressed = false;
       this.leftPressed = false;
       this.keyDownHandler = this.keyDownHandler.bind(this);
       this.keyUpHandler = this.keyUpHandler.bind(this);
       document.addEventListener('keydown', this.keyDownHandler);
       document.addEventListener('keyup', this.keyUpHandler);
-    }
-  
-    keyDownHandler(e) {
+  }
+
+  keyDownHandler(e) {
       if (e.key === 'd' || e.key === 'ArrowRight') {
-        this.rightPressed = true;
+          this.rightPressed = true;
       } else if (e.key === 'a' || e.key === 'ArrowLeft') {
-        this.leftPressed = true;
+          this.leftPressed = true;
       }
-    }
-  
-    keyUpHandler(e) {
+  }
+
+  keyUpHandler(e) {
       if (e.key === 'd' || e.key === 'ArrowRight') {
-        this.rightPressed = false;
+          this.rightPressed = false;
       } else if (e.key === 'a' || e.key === 'ArrowLeft') {
-        this.leftPressed = false;
+          this.leftPressed = false;
       }
-    }
+  }
 }
-  
+
 this.keyInputHandler = new KeyInputHandler();

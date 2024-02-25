@@ -1,28 +1,52 @@
+class User {
+    constructor(name, password) {
+        this.name = name;
+        this.password = password;
+    }
+}
+
+class Admin extends User {}
+
+class UserManager {
+    constructor(storageKey) {
+        this.storageKey = storageKey;
+        this.users = JSON.parse(localStorage.getItem(this.storageKey)) || [];
+    }
+
+    addUser(user) {
+        this.users.push(user);
+        localStorage.setItem(this.storageKey, JSON.stringify(this.users));
+    }
+
+    getUser(username, password) {
+        return this.users.find(user => user.name === username && user.password === password);
+    }
+
+    userExists(username) {
+        return this.users.some(user => user.name === username);
+    }
+}
+
+const ADMIN_PASSWORD_PETR_D = '1234';
+const ADMIN_PASSWORD_HONZA_B = 'neuhodnutelne';
+
 class Login {
-    constructor() {
-        this.main = new Main();
-        this.gameRenderer = new GameRenderer(this.main.ctx, this.main.canvas, this.main.keyInputHandler, this.main.bricks, this.main);
-        this.highScoreManager = new HighScoreManager();
+    constructor(main, gameRenderer, highScoreManager) {
+        this.main = main;
+        this.gameRenderer = gameRenderer;
+        this.highScoreManager = highScoreManager;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Set initial state of login fields
             this.toggleFields();
         });
 
         const loginButton = document.getElementById('loginButton');
         if (loginButton) {
-            loginButton.addEventListener('click', () => {
-                this.login();
-            });
-        } else {
-            console.error("Login button not found!");
+            loginButton.addEventListener('click', () => this.login());
         }
     }
 
     toggleFields() {
-        this.addAdmin('honzaB', 'neuhodnutelné:)');
-        this.addAdmin('petrD', '1234');
-
         const role = document.getElementById('role').value;
         const usernameLabel = document.getElementById('usernameLabel');
         const passwordLabel = document.getElementById('passwordLabel');
@@ -30,25 +54,11 @@ class Login {
         const passwordInput = document.getElementById('password');
         const registerButton = document.getElementById('registerButton');
 
-        if (role === 'guest') {
-            usernameLabel.style.display = 'none';
-            passwordLabel.style.display = 'none';
-            usernameInput.style.display = 'none';
-            passwordInput.style.display = 'none';
-            registerButton.style.display = 'none';
-        } else if (role === 'admin') {
-            usernameLabel.style.display = 'block';
-            passwordLabel.style.display = 'block';
-            usernameInput.style.display = 'block';
-            passwordInput.style.display = 'block';
-            registerButton.style.display = 'none';
-        } else {
-            usernameLabel.style.display = 'block';
-            passwordLabel.style.display = 'block';
-            usernameInput.style.display = 'block';
-            passwordInput.style.display = 'block';
-            registerButton.style.display = 'block';
-        }
+        usernameLabel.style.display = role === 'guest' ? 'none' : 'block';
+        passwordLabel.style.display = role === 'guest' ? 'none' : 'block';
+        usernameInput.style.display = role === 'guest' ? 'none' : 'block';
+        passwordInput.style.display = role === 'guest' ? 'none' : 'block';
+        registerButton.style.display = role === 'member' ? 'block' : 'none';
     }
 
     login() {
@@ -57,66 +67,56 @@ class Login {
         const password = document.getElementById('password').value;
         const loggedInRoleElement = document.getElementById('loggedInRole');
 
-        if (role === 'member' && (username === '' || password === '')) {
-            alert('Name and password cannot be empty.');
-        } else {
-            if (role === 'guest') {
-                this.loggedIn();
-                loggedInRoleElement.textContent = `Logged in as: Guest`;
-            } else if (role === 'admin') {
-                const storedAdmins = JSON.parse(localStorage.getItem('admins')) || [];
-                const admin = storedAdmins.find(u => u.name === username && u.password === password);
-                if (admin) {
-                    this.loggedIn();
-                    loggedInRoleElement.textContent = `Logged in as Admin: ${username}`;
-                    document.getElementById('clearHighScoresButton').style.display = 'block';
-                } else {
-                    alert('Invalid username or password.');
-                }
-            } else {
-                const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-                const user = storedUsers.find(u => u.name === username && u.password === password);
-                if (user) {
-                    this.loggedIn();
-                    loggedInRoleElement.textContent = `Logged in as: ${username}`;
-                } else {
-                    alert('Invalid username or password.');
-                }
+        const userManager = role === 'admin' ? new UserManager('admins') : new UserManager('users');
+        const user = userManager.getUser(username, password);
+
+        if (!user && role !== 'guest') {
+            alert('Invalid username or password.');
+            return;
+        }
+
+        if (role === 'admin') {
+            const validAdmins = [
+                { username: 'petrD', password: ADMIN_PASSWORD_PETR_D },
+                { username: 'honzaB', password: ADMIN_PASSWORD_HONZA_B }
+            ];
+            const isValidAdmin = validAdmins.some(admin => admin.username === username && admin.password === password);
+            if (!isValidAdmin) {
+                alert('You are not authorized to log in as an admin.');
+                return;
             }
+        }
+
+        this.loggedIn(user, role);
+        loggedInRoleElement.textContent = `Logged in as ${role === 'guest' ? 'Guest' : username}`;
+        if (role === 'admin') {
+            document.getElementById('clearHighScoresButton').style.display = 'block';
         }
     }
 
-    addAdmin(username, password) {
-        let storedAdmins = JSON.parse(localStorage.getItem('admins')) || [];
-        storedAdmins.push({ name: username, password: password });
-        localStorage.setItem('admins', JSON.stringify(storedAdmins));
-    }
-
-    newAdmin() {
-        const login = new Login();
-        login.addAdmin('honzaB', 'neuhodnutelné:)');
-        login.addAdmin('petrD', '1234');
-    }
-    
     register() {
         const role = document.getElementById('role').value;
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        if (role === 'member' && (username === '' || password === '')) {
-            alert('Name and password cannot be empty.');
-        } else {
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            const userExists = storedUsers.some(u => u.name === username);
+        const userManager = new UserManager('users');
 
-            if (userExists) {
-                alert('Username already exists. Please choose a different one.');
-            } else {
-                storedUsers.push({ name: username, password: password });
-                localStorage.setItem('users', JSON.stringify(storedUsers));
-                alert('Registration successful!');
-            }
+        if (userManager.userExists(username)) {
+            alert('Username already exists. Please choose a different one.');
+            return;
         }
+
+        const user = new User(username, password);
+        userManager.addUser(user);
+        alert('Registration successful!');
+    }
+
+    loggedIn(user, role) {
+        document.getElementById('clearHighScoresButton').style.display = role === 'admin' ? 'block' : 'none';
+        document.getElementById('loginPopup').style.display = 'none';
+        document.getElementById('logOutButton').style.display = 'block';
+        document.getElementById('gameMenu').style.display = 'block';
+        this.highScoreManager.displayHighScores();
     }
 
     logOut() {
@@ -128,13 +128,6 @@ class Login {
         document.getElementById('clearHighScoresButton').style.display = 'none';
         location.reload();
     }
-
-    loggedIn() {
-        document.getElementById('loginPopup').style.display = 'none';
-        document.getElementById('logOutButton').style.display = 'block';
-        document.getElementById('gameMenu').style.display = 'block';
-        this.highScoreManager.displayHighScores();
-    }
 }
 
-const login = new Login();
+const login = new Login(main, gameRenderer, highScoreManager);

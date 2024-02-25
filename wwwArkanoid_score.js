@@ -1,65 +1,122 @@
+
 class HighScoreManager {
-    constructor() {
-        this.highScores = [];
+    constructor(scoreDisplayElement) {
         this.score = 0;
-        this.scoreDisplay = document.getElementById('scoreDisplay');
-        this.highScoresList = document.getElementById('highScoresList');
-        this.scoreDecrementInterval = null;
-
-        this.updateScoreDisplay();
-
-        this.decrementScore = this.decrementScore.bind(this);
-        this.saveHighScore = this.saveHighScore.bind(this);
-        this.displayHighScores = this.displayHighScores.bind(this);
-        this.clearHighScores = this.clearHighScores.bind(this);
+        this.highScoreList = new HighScoreList();
+        this.scoreDisplay = new ScoreDisplay(scoreDisplayElement);
+        this.scoreDecrementer = new ScoreDecrementer(this);
+        this.highScoreList.load();
     }
 
     updateScoreDisplay() {
-        this.scoreDisplay.textContent = 'Score: ' + this.score;
+        this.scoreDisplay.update(this.score);
     }
 
     decrementScore() {
         if (this.score > 0) {
-            this.score -= 10;
+            this.score -= 1;
             this.updateScoreDisplay();
         }
     }
 
     saveHighScore(playerName) {
-        const existingPlayerIndex = this.highScores.findIndex(entry => entry.playerName === playerName);
-    
-        if (existingPlayerIndex !== -1) {
-            this.highScores[existingPlayerIndex].score = Math.max(this.highScores[existingPlayerIndex].score, this.score);
-        } else {
-            const newHighScore = { playerName: playerName, score: this.score };
-            this.highScores.push(newHighScore);
-        }
-    
-        this.highScores.sort((a, b) => b.score - a.score);
-        localStorage.setItem('highScores', JSON.stringify(this.highScores));
+        this.highScoreList.update(playerName, this.score);
         this.displayHighScores();
     }
 
     displayHighScores() {
-        const storedHighScores = localStorage.getItem('highScores');
-        if (storedHighScores) {
-            this.highScores = JSON.parse(storedHighScores);
-            this.highScoresList.innerHTML = '<h3>High Scores:</h3>';
-            this.highScores.slice(0, 10).forEach((entry, index) => {
+        const topScores = this.highScoreList.getTopScores();
+        const highScoresList = document.getElementById('highScoresList');
+        highScoresList.innerHTML = '<h3>High Scores:</h3>';
+
+        if (topScores.length > 0) {
+            topScores.forEach((entry, index) => {
                 const listItem = document.createElement('li');
                 listItem.textContent = `${index + 1}. ${entry.playerName}: ${entry.score}`;
-                this.highScoresList.appendChild(listItem);
+                highScoresList.appendChild(listItem);
             });
         } else {
-            this.highScoresList.innerHTML = '<h3>High Scores:</h3><h0>(No high scores yet)</h0>';
+            highScoresList.innerHTML += '<h0>(No high scores yet)</h0>';
         }
     }
 
     clearHighScores() {
-        localStorage.removeItem('highScores');
-        this.highScores = [];
-        this.highScoresList.innerHTML = '<h3>High Scores:</h3><h0>(No high scores yet)</h0>';
+        this.highScoreList.clear();
+        this.displayHighScores();
     }
 }
 
-const highScoreManager = new HighScoreManager();
+class HighScoreEntry {
+    constructor(playerName, score) {
+        this.playerName = playerName;
+        this.score = score;
+    }
+}
+
+class HighScoreList {
+    constructor() {
+        this.highScores = [];
+    }
+
+    update(playerName, score) {
+        const existingPlayerIndex = this.highScores.findIndex(entry => entry.playerName === playerName);
+
+        if (existingPlayerIndex !== -1) {
+            this.highScores[existingPlayerIndex].score = Math.max(this.highScores[existingPlayerIndex].score, score);
+        } else {
+            const newHighScore = new HighScoreEntry(playerName, score);
+            this.highScores.push(newHighScore);
+        }
+
+        this.highScores.sort((a, b) => b.score - a.score);
+        this.save();
+    }
+
+    save() {
+        localStorage.setItem('highScores', JSON.stringify(this.highScores));
+    }
+
+    load() {
+        const storedHighScores = localStorage.getItem('highScores');
+        if (storedHighScores) {
+            this.highScores = JSON.parse(storedHighScores);
+        }
+    }
+
+    clear() {
+        localStorage.removeItem('highScores');
+        this.highScores = [];
+    }
+
+    getTopScores(count = 10) {
+        return this.highScores.slice(0, count);
+    }
+}
+
+class ScoreDisplay {
+    constructor(scoreDisplayElement) {
+        this.scoreDisplayElement = scoreDisplayElement;
+    }
+
+    update(score) {
+        this.scoreDisplayElement.textContent = 'Score: ' + score;
+    }
+}
+
+class ScoreDecrementer {
+    constructor(scoreManager) {
+        this.scoreManager = scoreManager;
+        this.interval = null;
+    }
+
+    start() {
+        this.interval = setInterval(() => this.scoreManager.decrementScore(), 400);
+    }
+
+    stop() {
+        clearInterval(this.interval);
+    }
+}
+
+const scoreDisplayElement = document.getElementById('scoreDisplay');
+const highScoreManager = new HighScoreManager(scoreDisplayElement);
